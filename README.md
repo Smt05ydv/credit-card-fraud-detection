@@ -82,3 +82,4 @@ npm run dev
 - Integrating a database (PostgreSQL/MongoDB) to store transaction history.
 - Implementing an ensemble method (Isolation Forest + Autoencoders).
 - Adding user authentication.
+# credit-card-fraud-detection-
