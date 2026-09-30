@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+dist/
+build/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Data and Models
+data/*.csv
+backend/models/*.joblib
