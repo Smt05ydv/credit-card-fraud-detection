@@ -12,23 +12,33 @@ export const getStats = async () => {
   return res.data;
 };
 
-export const getModelInfo = async () => {
-  const res = await axios.get(`${API_URL}/model-info`);
+export const getModels = async () => {
+  const res = await axios.get(`${API_URL}/models`);
   return res.data;
 };
 
-export const predictTransaction = async (data) => {
-  const res = await axios.post(`${API_URL}/predict`, data);
+export const getModelMetrics = async () => {
+  const res = await axios.get(`${API_URL}/model/metrics`);
   return res.data;
 };
 
-export const predictBatch = async (file) => {
+export const predictTransaction = async (data, modelName = 'Isolation Forest') => {
+  const res = await axios.post(`${API_URL}/predict?model_name=${encodeURIComponent(modelName)}`, data);
+  return res.data;
+};
+
+export const predictBatch = async (file, modelName = 'Isolation Forest') => {
   const formData = new FormData();
   formData.append('file', file);
-  const res = await axios.post(`${API_URL}/predict/batch`, formData, {
+  const res = await axios.post(`${API_URL}/predict/batch?model_name=${encodeURIComponent(modelName)}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return res.data;
+};
+
+export const getTransactions = async (params = {}) => {
+  const res = await axios.get(`${API_URL}/transactions`, { params });
   return res.data;
 };

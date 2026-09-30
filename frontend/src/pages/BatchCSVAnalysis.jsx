@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
-import { predictBatch } from '../api';
-import { Upload, FileSpreadsheet, Download, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { predictBatch, getModels } from '../api';
+import { Upload, FileSpreadsheet, Download, AlertCircle, Cpu } from 'lucide-react';
 
 export default function BatchCSVAnalysis() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [results, setResults] = useState(null);
+  const [models, setModels] = useState(['Isolation Forest']);
+  const [selectedModel, setSelectedModel] = useState('Isolation Forest');
+
+  useEffect(() => {
+    getModels().then(data => {
+      if (data && data.models) setModels(data.models);
+    }).catch(console.error);
+  }, []);
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -20,7 +28,7 @@ export default function BatchCSVAnalysis() {
     setError(null);
     setResults(null);
     try {
-      const data = await predictBatch(file);
+      const data = await predictBatch(file, selectedModel);
       setResults(data);
     } catch (err) {
       setError(err.response?.data?.detail || 'An error occurred during CSV processing.');
@@ -53,9 +61,21 @@ export default function BatchCSVAnalysis() {
       <h2 className="text-2xl font-bold text-gray-800">Batch CSV Analysis</h2>
       
       <div className="card max-w-2xl">
-        <p className="text-gray-600 mb-4">
-          Upload a CSV file containing transaction data. Required columns: <code>Time</code>, <code>V1</code> to <code>V28</code>, and <code>Amount</code>.
-        </p>
+        <div className="flex justify-between items-center mb-4">
+          <p className="text-gray-600">
+            Upload a CSV file containing transaction data. Required columns: <code>Time</code>, <code>V1</code> to <code>V28</code>, and <code>Amount</code>.
+          </p>
+          <div className="flex items-center gap-2">
+            <Cpu size={18} className="text-gray-500"/>
+            <select 
+              value={selectedModel} 
+              onChange={e => setSelectedModel(e.target.value)}
+              className="input-field py-1 px-2 text-sm w-auto"
+            >
+              {models.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+        </div>
         
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer relative">
           <input type="file" accept=".csv" onChange={handleFileChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />

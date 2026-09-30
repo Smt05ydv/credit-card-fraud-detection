@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { predictTransaction } from '../api';
-import { AlertCircle, CheckCircle, ShieldAlert } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { predictTransaction, getModels } from '../api';
+import { AlertCircle, CheckCircle, ShieldAlert, Cpu } from 'lucide-react';
 
 export default function TransactionDetection() {
+  const [models, setModels] = useState(['Isolation Forest']);
+  const [selectedModel, setSelectedModel] = useState('Isolation Forest');
+  
   const [formData, setFormData] = useState({
     Time: 0, Amount: 0,
     ...Object.fromEntries(Array.from({ length: 28 }, (_, i) => [`V${i + 1}`, 0]))
@@ -11,6 +14,12 @@ export default function TransactionDetection() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    getModels().then(data => {
+      if (data && data.models) setModels(data.models);
+    }).catch(console.error);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: parseFloat(e.target.value) || 0 });
@@ -36,7 +45,7 @@ export default function TransactionDetection() {
     setError(null);
     setResult(null);
     try {
-      const res = await predictTransaction(formData);
+      const res = await predictTransaction(formData, selectedModel);
       setResult(res);
     } catch (err) {
       setError(err.response?.data?.detail || 'An error occurred during prediction.');
@@ -52,6 +61,17 @@ export default function TransactionDetection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 card">
           <div className="flex justify-between items-center mb-4">
+            <h3 className="font-semibold text-lg flex items-center gap-2"><Cpu size={20}/> Detection Engine</h3>
+            <select 
+              value={selectedModel} 
+              onChange={e => setSelectedModel(e.target.value)}
+              className="input-field py-1 px-3 text-sm w-auto font-medium"
+            >
+              {models.map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          
+          <div className="flex justify-between items-center mb-4 pt-4 border-t">
             <h3 className="font-semibold text-lg">Transaction Details</h3>
             <div className="space-x-2">
               <button onClick={() => handleDemoData('normal')} className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">Load Demo Normal</button>

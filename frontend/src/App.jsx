@@ -6,8 +6,9 @@ import BatchCSVAnalysis from './pages/BatchCSVAnalysis';
 import Analytics from './pages/Analytics';
 import ModelInfo from './pages/ModelInfo';
 import About from './pages/About';
+import TransactionHistory from './pages/TransactionHistory';
 import { getHealth } from './api';
-import { ShieldCheck, ShieldAlert, LayoutDashboard, Search, FileSpreadsheet, BarChart2, Info, Server } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, LayoutDashboard, Search, FileSpreadsheet, BarChart2, Info, Server, List } from 'lucide-react';
 
 function App() {
   const [backendStatus, setBackendStatus] = useState('Checking...');
@@ -39,6 +40,7 @@ function App() {
             <NavItem to="/" icon={<LayoutDashboard size={20}/>} label="Dashboard" />
             <NavItem to="/detect" icon={<Search size={20}/>} label="Transaction Detection" />
             <NavItem to="/batch" icon={<FileSpreadsheet size={20}/>} label="Batch CSV Analysis" />
+            <NavItem to="/history" icon={<List size={20}/>} label="History" />
             <NavItem to="/analytics" icon={<BarChart2 size={20}/>} label="Analytics" />
             <NavItem to="/model-info" icon={<Server size={20}/>} label="Model Info" />
             <NavItem to="/about" icon={<Info size={20}/>} label="About Project" />
@@ -58,7 +60,7 @@ function App() {
             <h2 className="text-xl font-semibold text-gray-800">Credit Card Fraud Detection</h2>
             <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
               <ShieldCheck size={16} className="text-green-500" />
-              Powered by Isolation Forest
+              Powered by Multi-Model AI
             </div>
           </header>
           
@@ -67,6 +69,7 @@ function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/detect" element={<TransactionDetection />} />
               <Route path="/batch" element={<BatchCSVAnalysis />} />
+              <Route path="/history" element={<TransactionHistory />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/model-info" element={<ModelInfo />} />
               <Route path="/about" element={<About />} />

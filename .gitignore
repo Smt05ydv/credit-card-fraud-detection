@@ -19,3 +19,4 @@ build/
 # Data and Models
 data/*.csv
 backend/models/*.joblib
+backend/transactions.db
