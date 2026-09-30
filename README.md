@@ -13,14 +13,16 @@ Credit card fraud costs billions annually. The dataset is heavily imbalanced (fr
 
 ## Features
 - **Dashboard:** Real-time statistics and visualizations of normal vs. anomalous transactions.
-- **Transaction Detection:** Real-time form to submit transaction details and get a prediction.
-- **Batch CSV Analysis:** Upload large CSV files for batch prediction.
-- **Risk Scoring:** Custom 0-100 risk score and level mapping.
+- **Transaction Detection:** Real-time form to submit transaction details and get a prediction using your choice of model.
+- **Batch CSV Analysis:** Upload large CSV files for batch prediction using your choice of model.
+- **Multi-Model Support:** Choose between Isolation Forest, Local Outlier Factor, and One-Class SVM on the fly.
+- **Transaction History:** Persistent SQLite database storing all predictions, searchable by risk and prediction filters.
+- **Risk Scoring:** Custom 0-100 risk score and level mapping based on algorithm confidence.
 
 ## Technology Stack
 - **Frontend:** React, Vite, Tailwind CSS, Recharts
-- **Backend:** Python, FastAPI, Uvicorn
-- **Machine Learning:** scikit-learn (Isolation Forest), Pandas, NumPy
+- **Backend:** Python, FastAPI, Uvicorn, SQLite
+- **Machine Learning:** scikit-learn (Isolation Forest, LOF, OCSVM), Pandas, NumPy
 
 ## Architecture
 1. **Frontend:** Sends user input or CSV files via HTTP POST.
