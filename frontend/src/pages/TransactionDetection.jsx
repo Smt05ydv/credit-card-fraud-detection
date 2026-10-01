@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { predictTransaction, getModels } from '../api';
-import { AlertCircle, CheckCircle, ShieldAlert, Cpu } from 'lucide-react';
+import { AlertCircle, CheckCircle, ShieldAlert, Cpu, Activity, Zap } from 'lucide-react';
 
 export default function TransactionDetection() {
   const [models, setModels] = useState(['Isolation Forest']);
@@ -55,97 +55,130 @@ export default function TransactionDetection() {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-800">Single Transaction Detection</h2>
+    <div className="space-y-8 animate-fade-in">
+      <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent flex items-center gap-3">
+        <Activity className="text-indigo-400" />
+        Transaction Interceptor
+      </h2>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg flex items-center gap-2"><Cpu size={20}/> Detection Engine</h3>
-            <select 
-              value={selectedModel} 
-              onChange={e => setSelectedModel(e.target.value)}
-              className="input-field py-1 px-3 text-sm w-auto font-medium"
-            >
-              {models.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 card">
+          <div className="flex justify-between items-center mb-6 pb-6 border-b border-slate-700/50">
+            <h3 className="font-semibold text-lg flex items-center gap-3 text-slate-200">
+              <Cpu size={22} className="text-indigo-400" /> 
+              Detection Matrix
+            </h3>
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-cyan-500 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+              <select 
+                value={selectedModel} 
+                onChange={e => setSelectedModel(e.target.value)}
+                className="input-field relative py-1.5 px-4 text-sm w-auto font-medium cursor-pointer shadow-none"
+              >
+                {models.map(m => <option key={m} value={m}>{m}</option>)}
+              </select>
+            </div>
           </div>
           
-          <div className="flex justify-between items-center mb-4 pt-4 border-t">
-            <h3 className="font-semibold text-lg">Transaction Details</h3>
-            <div className="space-x-2">
-              <button onClick={() => handleDemoData('normal')} className="text-xs bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded">Load Demo Normal</button>
-              <button onClick={() => handleDemoData('fraud')} className="text-xs bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded">Load Demo Fraud</button>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-medium text-slate-300">Transaction Payload</h3>
+            <div className="space-x-3">
+              <button type="button" onClick={() => handleDemoData('normal')} className="text-xs bg-emerald-500/10 border border-emerald-500/20 hover:bg-emerald-500/20 text-emerald-400 px-3 py-1.5 rounded-lg transition-all shadow-inner font-medium">Inject Normal Payload</button>
+              <button type="button" onClick={() => handleDemoData('fraud')} className="text-xs bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-400 px-3 py-1.5 rounded-lg transition-all shadow-inner font-medium">Inject Anomaly Payload</button>
             </div>
           </div>
           
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Time</label>
-                <input type="number" step="any" name="Time" value={formData.Time} onChange={handleChange} className="input-field py-1 px-2 text-sm" required />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Time</label>
+                <input type="number" step="any" name="Time" value={formData.Time} onChange={handleChange} className="input-field font-mono text-sm" required />
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Amount</label>
-                <input type="number" step="any" name="Amount" value={formData.Amount} onChange={handleChange} className="input-field py-1 px-2 text-sm" required />
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">Amount</label>
+                <input type="number" step="any" name="Amount" value={formData.Amount} onChange={handleChange} className="input-field font-mono text-sm" required />
               </div>
-              {Array.from({ length: 28 }, (_, i) => i + 1).map(i => (
-                <div key={i}>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">V{i}</label>
-                  <input type="number" step="any" name={`V${i}`} value={formData[`V${i}`]} onChange={handleChange} className="input-field py-1 px-2 text-sm" required />
+              {Array.from({ length: 28 }).map((_, i) => (
+                <div key={`V${i + 1}`} className="space-y-1.5">
+                  <label className="block text-xs font-medium text-slate-400 uppercase tracking-wider">V{i + 1}</label>
+                  <input type="number" step="any" name={`V${i + 1}`} value={formData[`V${i + 1}`]} onChange={handleChange} className="input-field font-mono text-sm" required />
                 </div>
               ))}
             </div>
-            <button type="submit" className="btn w-full flex justify-center items-center gap-2" disabled={loading}>
-              {loading ? 'Analyzing...' : <>Detect Transaction <ShieldAlert size={16}/></>}
+            
+            <button type="submit" disabled={loading} className="btn w-full flex justify-center items-center gap-2 py-3 text-lg">
+              {loading ? (
+                <span className="animate-pulse">Processing Neural Network...</span>
+              ) : (
+                <><Zap size={20} /> Execute Scan</>
+              )}
             </button>
           </form>
         </div>
 
-        <div className="lg:col-span-1">
-          {error && <div className="p-4 bg-red-50 text-red-600 rounded-lg border border-red-100 flex gap-2"><AlertCircle size={20}/> {error}</div>}
-          
+        <div>
+          {error && (
+            <div className="card border-rose-500/50 bg-rose-900/10 shadow-[0_0_20px_rgba(244,63,94,0.1)] mb-6 flex items-start gap-4">
+              <AlertCircle className="text-rose-400 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-rose-400 mb-1">System Error</h4>
+                <p className="text-sm text-slate-300">{error}</p>
+              </div>
+            </div>
+          )}
+
           {result && (
-            <div className={`card border-t-4 ${result.is_anomaly ? 'border-t-red-500 bg-red-50' : 'border-t-green-500 bg-green-50'}`}>
-              <h3 className="font-bold text-lg mb-2">Detection Result</h3>
+            <div className="card relative overflow-hidden group">
+              <div className={`absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl opacity-20 pointer-events-none transition-all duration-700
+                ${result.is_anomaly ? 'bg-rose-500' : 'bg-emerald-500'}`}></div>
+                
+              <h3 className="font-bold text-xl mb-6 text-slate-100 flex items-center gap-2">
+                Scan Results
+              </h3>
               
-              <div className="flex items-center gap-3 mb-4">
-                {result.is_anomaly ? <AlertCircle className="text-red-500" size={32}/> : <CheckCircle className="text-green-500" size={32}/>}
+              <div className={`p-5 rounded-xl border mb-6 flex items-center gap-4 transition-all duration-300
+                ${result.is_anomaly 
+                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-400 shadow-[inset_0_0_20px_rgba(244,63,94,0.1)]' 
+                  : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 shadow-[inset_0_0_20px_rgba(16,185,129,0.1)]'}`}>
+                {result.is_anomaly ? <ShieldAlert size={36} className="shrink-0" /> : <CheckCircle size={36} className="shrink-0" />}
                 <div>
-                  <p className={`text-xl font-bold ${result.is_anomaly ? 'text-red-600' : 'text-green-600'}`}>
+                  <div className="text-sm tracking-widest uppercase opacity-80 mb-0.5">Prediction Match</div>
+                  <div className={`text-2xl font-bold tracking-wide ${result.is_anomaly ? 'text-glow-red' : 'text-glow-green'}`}>
                     {result.prediction}
-                  </p>
+                  </div>
                 </div>
               </div>
               
-              <div className="space-y-3 bg-white p-4 rounded border border-gray-100">
-                <div className="flex justify-between border-b pb-2">
-                  <span className="text-gray-500">Anomaly Score</span>
-                  <span className="font-mono font-medium">{result.anomaly_score}</span>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center py-3 border-b border-slate-700/50">
+                  <span className="text-slate-400">Threat Level</span>
+                  <span className={`font-semibold px-3 py-1 rounded-md text-sm border
+                    ${result.risk_level === 'High Risk' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' 
+                      : result.risk_level === 'Medium Risk' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
+                      : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+                    {result.risk_level}
+                  </span>
                 </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span className="text-gray-500">Risk Score</span>
-                  <span className="font-mono font-medium">{result.risk_score}/100</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-700/50">
+                  <span className="text-slate-400">Risk Score Metric</span>
+                  <span className="font-mono text-lg text-slate-200">{result.risk_score} <span className="text-slate-500 text-sm">/ 100</span></span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Risk Level</span>
-                  <span className={`font-medium ${
-                    result.risk_level === 'High Risk' ? 'text-red-600' : 
-                    result.risk_level === 'Medium Risk' ? 'text-orange-500' : 'text-green-600'
-                  }`}>{result.risk_level}</span>
+                <div className="flex justify-between items-center py-3 border-b border-slate-700/50">
+                  <span className="text-slate-400">Anomaly Confidence</span>
+                  <span className="font-mono text-slate-300">{result.anomaly_score.toFixed(4)}</span>
+                </div>
+                <div className="flex justify-between items-center py-3">
+                  <span className="text-slate-400">Engine Used</span>
+                  <span className="text-indigo-400 font-medium">{result.model_used}</span>
                 </div>
               </div>
-              
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                This risk score is a project-defined indicator based on anomaly detection and is not an official banking risk score.
-              </p>
             </div>
           )}
           
           {!result && !error && (
-            <div className="card h-full flex flex-col items-center justify-center text-gray-400 min-h-[300px]">
-              <ShieldAlert size={48} className="mb-4 opacity-20" />
-              <p>Submit a transaction to see results</p>
+            <div className="card border border-dashed border-slate-700 bg-slate-900/20 flex flex-col items-center justify-center h-64 text-slate-500">
+              <Zap size={48} className="mb-4 opacity-20" />
+              <p>Awaiting payload execution...</p>
             </div>
           )}
         </div>
